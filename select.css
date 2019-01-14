@@ -1,0 +1,27 @@
+.select-matched-element {
+    cursor: pointer;
+    padding: 10px 0;
+    border-bottom: 1px solid gray;
+}
+
+.select-input {
+    width: 100%;
+}
+
+.select-selected-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.select-selected-element {
+    padding: 10px;
+    background-color: lightgray;
+    margin: 5px;
+    border: 1px solid gray;
+}
+
+.select-selected-element-close {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid gray;
+}
