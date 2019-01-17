@@ -1,14 +1,14 @@
 import { machine, useContext, useState } from './StateMachine.js'
 
-const matchedMachine = (container, makeNode, limit) => machine({
+const matchedMachine = (addItem, clearItems, limit) => machine({
   initialState: 'unitialized',
   context: {},
   states: {
     unitialized: {
       on: {
         INIT: {
-          service(event){
-            useContext()[1]({selectorMachine: event.selectorMachine})
+          service({selectorMachine}){
+            useContext()[1]({selectorMachine: selectorMachine})
             useState()[1]('waiting')
           }
         }
@@ -24,17 +24,13 @@ const matchedMachine = (container, makeNode, limit) => machine({
   },
   actions: {
     clear(){
-      while(container.firstChild)
-        container.removeChild(container.firstChild)
+      clearItems()
       useState()[1]('drawing')
     },
-    draw(event){
-      const {matched} = event
-      event.matched.slice(0, limit).forEach(item => {
-        const [{selectorMachine}] = useContext()
-        const node = makeNode(item, () => selectorMachine.transition('SELECT', {item: item}))
-        container.appendChild(node)
-      })
+    draw({matched}){
+      const [{selectorMachine}] = useContext()
+      matched.slice(0, limit).forEach(item => addItem(
+        item, () => selectorMachine.transition('SELECT', {item: item})))
       useState()[1]('waiting')
     }
   }

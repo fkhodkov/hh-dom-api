@@ -21,23 +21,27 @@ function selector(items, params) {
     {selectedCloseClass: selectedClass + '-close'},
     params
   )
+  const selectedNodes = new Map()
+
   const machine = selectorMachine(
     items,
     query => item => item.toLowerCase().indexOf(query.toLowerCase()) >= 0,
 
     matchedMachine(
-      matchedContainer,
       (text, callback) => {
         const node = document.createElement(matchedTag)
         node.innerHTML = text
         node.classList.add(matchedClass)
         node.addEventListener('click', callback)
-        return node
+        matchedContainer.appendChild(node)
+      },
+      () => {
+        while(matchedContainer.firstChild)
+          matchedContainer.removeChild(matchedContainer.firstChild)
       },
       matchedLimit),
 
     selectedMachine(
-      selectedContainer,
       (text, callback) => {
         const node = document.createElement(selectedTag)
         node.innerHTML = text
@@ -47,7 +51,12 @@ function selector(items, params) {
         nodeClose.classList.add(selectedCloseClass)
         nodeClose.addEventListener('click', callback)
         node.appendChild(nodeClose)
-        return node
+        selectedContainer.appendChild(node)
+        selectedNodes.set(text, node)
+      },
+      (item) => {
+        selectedContainer.removeChild(selectedNodes.get(item))
+        selectedNodes.delete(item)
       }
     )
   )

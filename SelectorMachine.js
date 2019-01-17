@@ -23,32 +23,32 @@ function selectorMachine(items, makeQueryMatcher, matchedMachine, selectedMachin
         }
       },
       selecting: {
-        onEntry: event => {
+        onEntry: ({item}) => {
           const [{selected}, setContext] = useContext()
-          if(selected.has(event.item))
+          if(selected.has(item))
             throw new Error("Attempt to select an already selected item")
-          selected.add(event.item)
+          selected.add(item)
           setContext({selected: selected})
-          selectedMachine.transition('SELECT', {items: selected})
+          selectedMachine.transition('SELECT', {item: item})
           useState()[1]('waiting')
         },
         onExit: 'updateMatch',
       },
       deselecting: {
-        onEntry: event => {
+        onEntry: ({item}) => {
           const [{selected}, setContext] = useContext()
-          if (!selected.delete(event.item))
+          if (!selected.delete(item))
             throw new Error("Attempt to delete an unselected item")
           setContext({selected: selected})
-          selectedMachine.transition('SELECT', {items: selected})
+          selectedMachine.transition('DESELECT', {item: item})
           useState()[1]('waiting')
         },
         onExit: 'updateMatch'
       },
       matching: {
         onExit: 'updateMatch',
-        onEntry: event => {
-          useContext()[1]({ query: event.query })
+        onEntry: ({query}) => {
+          useContext()[1]({ query: query })
           useState()[1]('waiting')
         }
       }

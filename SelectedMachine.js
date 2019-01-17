@@ -1,14 +1,15 @@
 import { machine, useContext, useState } from './StateMachine.js'
 
-const selectedMachine = (container, makeNode) => machine({
+const selectedMachine = (add, remove) => machine({
   initialState: 'unitialized',
   context: {},
+
   states: {
     unitialized: {
       on: {
         INIT: {
-          service(event) {
-            useContext()[1]({selectorMachine: event.selectorMachine})
+          service({selectorMachine}) {
+            useContext()[1]({selectorMachine: selectorMachine})
             useState()[1]('waiting')
           }
         }
@@ -16,24 +17,22 @@ const selectedMachine = (container, makeNode) => machine({
     },
     waiting: {
       on: {
-        SELECT: { target: 'clearing' },
+        SELECT: { target: 'selecting' },
+        DESELECT: { target: 'deselecting'}
       }
     },
-    clearing: { onEntry: 'clear' },
-    drawing: { onEntry: 'draw' },
+    selecting: { onEntry: 'select' },
+    deselecting: { onEntry: 'deselect' },
   },
+
   actions: {
-    clear(event) {
-      while(container.firstChild)
-        container.removeChild(container.firstChild)
-      useState()[1]('drawing')
+    select({item}) {
+      const [{selectorMachine}] = useContext()
+      add(item, () => selectorMachine.transition('DESELECT', {item: item}))
+      useState()[1]('waiting')
     },
-    draw(event) {
-      event.items.forEach((item) => {
-        const [{selectorMachine}] = useContext()
-        const node = makeNode(item, () => selectorMachine.transition('DESELECT', {item: item}))
-        container.appendChild(node)
-      })
+    deselect({item}) {
+      remove(item)
       useState()[1]('waiting')
     },
   }
