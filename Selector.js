@@ -21,7 +21,6 @@ function selector(items, params) {
     {selectedCloseClass: selectedClass + '-close'},
     params
   )
-  const selectedNodes = new Map()
 
   const machine = selectorMachine(
     items,
@@ -42,21 +41,23 @@ function selector(items, params) {
       matchedLimit),
 
     selectedMachine(
-      (text, callback) => {
+      (item, callback) => {
         const node = document.createElement(selectedTag)
-        node.innerHTML = text
+        node.innerHTML = item
         node.classList.add(selectedClass)
         const nodeClose = document.createElement('span')
         nodeClose.innerHTML = 'x'
         nodeClose.classList.add(selectedCloseClass)
         nodeClose.addEventListener('click', callback)
         node.appendChild(nodeClose)
+        node.dataset.item = item
         selectedContainer.appendChild(node)
-        selectedNodes.set(text, node)
       },
       (item) => {
-        selectedContainer.removeChild(selectedNodes.get(item))
-        selectedNodes.delete(item)
+        selectedContainer.removeChild(
+          Array.from(selectedContainer.children).
+            find(child => child.dataset.item === item)
+        )
       }
     )
   )
