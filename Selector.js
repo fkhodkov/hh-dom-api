@@ -29,9 +29,12 @@ function selector(items, params) {
     matchedMachine(
       (text, callback) => {
         const node = document.createElement(matchedTag)
-        node.innerHTML = text
         node.classList.add(matchedClass)
-        node.addEventListener('click', callback)
+        const nodeAdd = document.createElement('button')
+        nodeAdd.innerHTML = '+'
+        node.appendChild(nodeAdd)
+        nodeAdd.addEventListener('click', callback)
+        node.appendChild(document.createTextNode(text))
         matchedContainer.appendChild(node)
       },
       () => {
@@ -45,7 +48,7 @@ function selector(items, params) {
         const node = document.createElement(selectedTag)
         node.innerHTML = item
         node.classList.add(selectedClass)
-        const nodeClose = document.createElement('span')
+        const nodeClose = document.createElement('button')
         nodeClose.innerHTML = 'x'
         nodeClose.classList.add(selectedCloseClass)
         nodeClose.addEventListener('click', callback)
